@@ -6,17 +6,20 @@ import cats.effect.unsafe.implicits.global
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
+import java.util.concurrent.atomic.AtomicReference
+
 class CE3Spec extends AnyFunSuite with should.Matchers {
   test("ce3") {
     for (_ <- 0 until 1_000_000) {
       val ref = Ref.unsafe(5)
+      val thread = new AtomicReference[Thread]()
 
-      val va = ref.get.map { v =>
-        Console.println(Thread.currentThread().getName)
+      ref.get.map { v =>
+        thread.set(Thread.currentThread())
         v
       }.unsafeRunSync()
 
-      Console.println(va)
+      thread.get should not be Thread.currentThread()
     }
   }
 }
