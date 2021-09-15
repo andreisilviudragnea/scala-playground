@@ -11,11 +11,11 @@ class CE2Spec extends AnyFunSuite with should.Matchers {
       val ref = Ref.unsafe(5)
 
       val va = ref.get.map { v =>
-        Console.println(Thread.currentThread().getName)
+        println(Thread.currentThread().getName)
         v
       }.unsafeRunSync()
 
-      Console.println(va)
+      println(va)
     }
   }
 }
