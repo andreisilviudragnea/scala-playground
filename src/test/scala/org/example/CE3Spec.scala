@@ -50,22 +50,24 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
   }
 
   test("fromCompletableFuture supplyAsync") {
-    val exception = new RuntimeException
-    IO
-      .fromCompletableFuture(IO(CompletableFuture.supplyAsync[Int] { () =>
-        Thread.sleep(5_000)
-        throw exception
-      }))
-      .attempt
-      .map {
-        case Left(throwable) =>
-          throwable shouldBe exception
-          None
-        case Right(_) => Some(1)
-      }
-      .unsafeToFuture()
-      .asJava
-      .toCompletableFuture
-      .get() shouldBe None
+    for (_ <- 0 until 1_000_000) {
+      val exception = new RuntimeException
+      IO
+        .fromCompletableFuture(IO(CompletableFuture.supplyAsync[Int] { () =>
+          Thread.sleep(1)
+          throw exception
+        }))
+        .attempt
+        .map {
+          case Left(throwable) =>
+            throwable shouldBe exception
+            Some(1)
+          case Right(_) => Some(2)
+        }
+        .unsafeToFuture()
+        .asJava
+        .toCompletableFuture
+        .get() shouldBe Some(1)
+    }
   }
 }
