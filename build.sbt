@@ -8,5 +8,6 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-effect" % "3.2.9",
   "org.apache.kafka" % "kafka-clients" % "3.0.0",
   "org.scalatest" %% "scalatest" % "3.2.9" % Test,
-  "org.scalamock" %% "scalamock" % "5.1.0" % Test
+  "org.scalamock" %% "scalamock" % "5.1.0" % Test,
+  "com.github.ben-manes.caffeine" % "caffeine" % "3.0.4"
 )
