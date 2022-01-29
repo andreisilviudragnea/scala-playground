@@ -54,7 +54,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .get() shouldBe None
   }
 
-  test("fromCompletableFuture supplyAsync") {
+  ignore("fromCompletableFuture supplyAsync") {
     for (_ <- 0 until 1_000_000) {
       val exception = new RuntimeException
       IO

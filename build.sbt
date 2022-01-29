@@ -4,6 +4,13 @@ version := "0.1"
 
 scalaVersion := "2.13.8"
 
+inThisBuild(
+  Seq(
+    crossScalaVersions := Seq("2.13.8"),
+    githubWorkflowPublishTargetBranches := Seq()
+  )
+)
+
 libraryDependencies ++= Seq(
   "org.typelevel" %% "cats-effect" % "3.3.4",
   "org.apache.kafka" % "kafka-clients" % "3.1.0",

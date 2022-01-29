@@ -67,14 +67,15 @@ class ScalaMockSpec extends AnyFunSuite with should.Matchers with MockFactory {
     (logger.info _: (=> String) => IO[Unit]).verify(*)
   }
 
-  test("ScalaMock5") {
+  ignore("ScalaMock5") {
     trait Logger {
       def info(message: => String): IO[Unit]
     }
 
     val logger = mock[Logger]
 
-    (logger.info(_: String))
+    (logger
+      .info(_: String))
       .expects("")
       .returning(IO.unit)
 

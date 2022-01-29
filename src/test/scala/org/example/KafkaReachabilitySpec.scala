@@ -8,7 +8,7 @@ import org.scalatest.matchers.should
 import java.util.Properties
 
 class KafkaReachabilitySpec extends AnyFunSuite with should.Matchers {
-  test("kafka") {
+  ignore("kafka") {
     val clientSettings = new Properties()
     clientSettings.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "")
     val client = Admin.create(clientSettings)
