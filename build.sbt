@@ -1,3 +1,5 @@
+import sbt.Keys.startYear
+
 name := "scala-playground"
 
 version := "0.1"
@@ -7,7 +9,11 @@ scalaVersion := "2.13.8"
 inThisBuild(
   Seq(
     crossScalaVersions := Seq("2.13.8"),
-    githubWorkflowPublishTargetBranches := Seq()
+    tlBaseVersion := "0.1",
+    organization := "io,dragnea",
+    organizationName := "Andrei Silviu Dragnea",
+    startYear := Some(2022),
+    githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
   )
 )
 
