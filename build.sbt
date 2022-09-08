@@ -13,7 +13,8 @@ inThisBuild(
     organization := "io,dragnea",
     organizationName := "Andrei Silviu Dragnea",
     startYear := Some(2022),
-    githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
+    githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
+    tlJdkRelease := Some(17)
   )
 )
 
