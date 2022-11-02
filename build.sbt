@@ -8,13 +8,14 @@ scalaVersion := "2.13.10"
 
 inThisBuild(
   Seq(
-    crossScalaVersions := Seq("2.13.8"),
+    crossScalaVersions := Seq("2.13.10"),
     tlBaseVersion := "0.1",
     organization := "io,dragnea",
     organizationName := "Andrei Silviu Dragnea",
     startYear := Some(2022),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
-    tlJdkRelease := Some(17)
+    tlJdkRelease := Some(17),
+    scalacOptions ++= Seq("-Ymacro-annotations", "-Xlint:-byname-implicit")
   )
 )
 
@@ -24,5 +25,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.14" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
   "com.github.ben-manes.caffeine" % "caffeine" % "3.1.1",
-  "co.fs2" %% "fs2-core" % "3.3.0"
+  "co.fs2" %% "fs2-core" % "3.3.0",
+  "io.circe" %% "circe-generic" % "0.14.3"
 )
