@@ -20,7 +20,7 @@ inThisBuild(
 )
 
 libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats-effect" % "3.4-148221d",
+  "org.typelevel" %% "cats-effect" % "3.5-4ba2590",
   "org.apache.kafka" % "kafka-clients" % "3.3.1",
   "org.scalatest" %% "scalatest" % "3.2.14" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
