@@ -16,7 +16,7 @@
 
 package org.example
 
-import com.github.benmanes.caffeine.cache.{AsyncLoadingCache, Caffeine}
+import com.github.benmanes.caffeine.cache._
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
@@ -48,5 +48,24 @@ class CaffeineSpec extends AnyFunSuite with should.Matchers {
           }
         })
     }
+  }
+
+  test("cleanUp") {
+    val cache: LoadingCache[String, String] = Caffeine
+      .newBuilder()
+      .removalListener { (k: String, _: String, _: RemovalCause) =>
+        println(s"Removed $k")
+      }
+      .build { k: String =>
+        println(s"Added $k")
+        ""
+      }
+
+    cache.get("a")
+    cache.get("b")
+
+    cache.cleanUp()
+
+    Thread.sleep(1_000)
   }
 }
