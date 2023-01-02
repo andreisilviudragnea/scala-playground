@@ -19,20 +19,80 @@ package org.example
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.{CompletableFuture, ConcurrentLinkedQueue, Executors}
 
 class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
   test("CompletableFuture") {
     for (_ <- 0 until 100) {
-//      val currentThread = Thread.currentThread()
+      val currentThread = Thread.currentThread()
       CompletableFuture
         .supplyAsync(() => 5)
         .thenAccept { _ =>
           val acceptThread = Thread.currentThread()
           println(acceptThread)
-//          acceptThread shouldNot be currentThread
+          acceptThread shouldNot equal(currentThread)
         }
     }
+  }
+
+  test("thenAcceptAsync") {
+    val future = CompletableFuture.completedFuture("")
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    (0 until 100).foreach { v =>
+      future.thenAcceptAsync { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }
+    }
+
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    //      array shouldBe (0 until 100).toArray
+  }
+
+  test("thenAcceptAsync single-threaded executor") {
+    val future = CompletableFuture.completedFuture("")
+
+    val executor = Executors.newSingleThreadExecutor()
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    (0 until 100).foreach { v =>
+      future.thenAcceptAsync(
+        { _ =>
+          queue.offer(v)
+          println(Thread.currentThread())
+          ()
+        },
+        executor
+      )
+    }
+
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    array shouldBe (0 until 100).toArray
+  }
+
+  test("thenAccept") {
+    val future = CompletableFuture.completedFuture("")
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    (0 until 100).foreach { v =>
+      future.thenAccept { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }
+    }
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    array shouldBe (0 until 100).toArray
   }
 }
