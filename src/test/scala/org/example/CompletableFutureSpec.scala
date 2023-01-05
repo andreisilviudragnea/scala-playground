@@ -19,7 +19,11 @@ package org.example
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
-import java.util.concurrent.{CompletableFuture, ConcurrentLinkedQueue, Executors}
+import java.util.concurrent.{
+  CompletableFuture,
+  ConcurrentLinkedQueue,
+  Executors
+}
 
 class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
