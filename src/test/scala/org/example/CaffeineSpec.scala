@@ -20,6 +20,9 @@ import com.github.benmanes.caffeine.cache._
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
+import scala.concurrent.duration.DurationInt
+import scala.jdk.DurationConverters.ScalaDurationOps
+
 class CaffeineSpec extends AnyFunSuite with should.Matchers {
 
   ignore("caffeine race condition") {
@@ -53,12 +56,13 @@ class CaffeineSpec extends AnyFunSuite with should.Matchers {
   test("cleanUp") {
     val cache: LoadingCache[String, String] = Caffeine
       .newBuilder()
-      .removalListener { (k: String, _: String, _: RemovalCause) =>
-        println(s"Removed $k")
+      .removalListener { (k: String, v: String, removalCause: RemovalCause) =>
+        println(s"${Thread.currentThread()}")
+        println(s"Removed k=$k v=$v removalCause=$removalCause")
       }
       .build { k: String =>
         println(s"Added $k")
-        ""
+        "value"
       }
 
     cache.get("a")
@@ -67,5 +71,62 @@ class CaffeineSpec extends AnyFunSuite with should.Matchers {
     cache.cleanUp()
 
     Thread.sleep(1_000)
+  }
+
+  test("removalListener remove") {
+    val cache: LoadingCache[String, String] = Caffeine
+      .newBuilder()
+      .removalListener { (k: String, v: String, removalCause: RemovalCause) =>
+        println(s"${Thread.currentThread()}")
+        println(s"Removed k=$k v=$v removalCause=$removalCause")
+      }
+      .build { k: String =>
+        println(s"Added $k")
+        "value"
+      }
+
+    cache.get("a")
+    cache.get("b")
+
+    val map = cache.asMap()
+    map.remove("a")
+    map.remove("b")
+  }
+
+  test("removalListener invalidateAll unbounded local cache") {
+    val cache: LoadingCache[String, String] = Caffeine
+      .newBuilder()
+      .removalListener { (k: String, v: String, removalCause: RemovalCause) =>
+        println(s"${Thread.currentThread()}")
+        println(s"Removed k=$k v=$v removalCause=$removalCause")
+      }
+      .build { k: String =>
+        println(s"Added $k")
+        "value"
+      }
+
+    cache.get("a")
+    cache.get("b")
+
+    cache.invalidateAll()
+  }
+
+  test("removalListener invalidateAll bounded local cache") {
+    val cache: LoadingCache[String, String] = Caffeine
+      .newBuilder()
+      .removalListener { (k: String, v: String, removalCause: RemovalCause) =>
+        println(s"${Thread.currentThread()}")
+        println(s"Removed k=$k v=$v removalCause=$removalCause")
+      }
+      .expireAfterAccess(5.seconds.toJava)
+      .build { k: String =>
+        println(s"Added $k")
+        "value"
+      }
+
+    cache.get("a")
+    cache.get("b")
+
+    cache.invalidateAll()
   }
 }
