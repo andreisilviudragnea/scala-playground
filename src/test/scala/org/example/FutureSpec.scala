@@ -19,12 +19,15 @@ package org.example
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
-import java.util.concurrent.Executors
+import java.util.concurrent.{ConcurrentLinkedQueue, Executors}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future, Promise}
+import scala.util.Success
 
 class FutureSpec extends AnyFunSuite with should.Matchers {
-  test("Future") {
+  private val range: Range = 0 until 100
+
+  test("future execution context") {
     Future("")
       .map { v =>
         println(Thread.currentThread())
@@ -38,5 +41,132 @@ class FutureSpec extends AnyFunSuite with should.Matchers {
           Executors.newSingleThreadExecutor()
         )
       )
+  }
+
+  test("map") {
+    val promise = Promise[String]()
+    promise.complete(Success(""))
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    range.foreach { v =>
+      promise.future.map { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }
+    }
+
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+//    array shouldBe range.toArray
+  }
+
+  test("map future completed later") {
+    val promise = Promise[String]()
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    range.foreach { v =>
+      promise.future.map { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }
+    }
+
+    promise.complete(Success(""))
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+//    array shouldBe range.toArray
+  }
+
+  test("map single-thread executor") {
+    val promise = Promise[String]()
+    promise.complete(Success(""))
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    val executionContext = ExecutionContext.fromExecutorService(
+      Executors.newSingleThreadExecutor()
+    )
+
+    range.foreach { v =>
+      promise.future.map { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }(executionContext)
+    }
+
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    array shouldBe range.toArray
+  }
+
+  test("map single-thread executor future completed later") {
+    val promise = Promise[String]()
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    val executionContext = ExecutionContext.fromExecutorService(
+      Executors.newSingleThreadExecutor()
+    )
+
+    range.foreach { v =>
+      promise.future.map { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }(executionContext)
+    }
+
+    promise.complete(Success(""))
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    array shouldBe range.toArray.reverse
+  }
+
+  test("map same-thread executor") {
+    val promise = Promise[String]()
+    promise.complete(Success(""))
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+
+    range.foreach { v =>
+      promise.future.map { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }(ExecutionContext.parasitic)
+    }
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    array shouldBe range.toArray
+  }
+
+  test("map same-thread executor future completed later") {
+    val promise = Promise[String]()
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+
+    range.foreach { v =>
+      promise.future.map { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }(ExecutionContext.parasitic)
+    }
+
+    promise.complete(Success(""))
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    array shouldBe range.toArray.reverse
   }
 }

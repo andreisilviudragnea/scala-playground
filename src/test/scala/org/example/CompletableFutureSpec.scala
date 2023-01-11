@@ -27,8 +27,10 @@ import java.util.concurrent.{
 
 class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
+  private val range: Range = 0 until 100
+
   test("CompletableFuture") {
-    for (_ <- 0 until 100) {
+    for (_ <- range) {
       val currentThread = Thread.currentThread()
       CompletableFuture
         .supplyAsync(() => 5)
@@ -44,7 +46,7 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
     val future = CompletableFuture.completedFuture("")
 
     val queue = new ConcurrentLinkedQueue[Int]()
-    (0 until 100).foreach { v =>
+    range.foreach { v =>
       future.thenAcceptAsync { _ =>
         queue.offer(v)
         println(Thread.currentThread())
@@ -56,14 +58,14 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
     val array = queue.toArray
     array.size shouldBe 100
-    //      array shouldBe (0 until 100).toArray
+//    array shouldBe range.toArray
   }
 
-  test("thenAcceptAsync 2") {
+  test("thenAcceptAsync future completed later") {
     val future = new CompletableFuture[String]()
 
     val queue = new ConcurrentLinkedQueue[Int]()
-    (0 until 100).foreach { v =>
+    range.foreach { v =>
       future.thenAcceptAsync { _ =>
         queue.offer(v)
         println(Thread.currentThread())
@@ -77,7 +79,7 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
     val array = queue.toArray
     array.size shouldBe 100
-    //      array shouldBe (0 until 100).toArray
+//    array shouldBe range.toArray
   }
 
   test("thenAcceptAsync single-threaded executor") {
@@ -86,7 +88,7 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
     val executor = Executors.newSingleThreadExecutor()
 
     val queue = new ConcurrentLinkedQueue[Int]()
-    (0 until 100).foreach { v =>
+    range.foreach { v =>
       future.thenAcceptAsync(
         { _ =>
           queue.offer(v)
@@ -101,16 +103,16 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
     val array = queue.toArray
     array.size shouldBe 100
-    array shouldBe (0 until 100).toArray
+    array shouldBe range.toArray
   }
 
-  test("thenAcceptAsync single-threaded executor 2") {
+  test("thenAcceptAsync single-threaded executor future completed later") {
     val future = new CompletableFuture[String]()
 
     val executor = Executors.newSingleThreadExecutor()
 
     val queue = new ConcurrentLinkedQueue[Int]()
-    (0 until 100).foreach { v =>
+    range.foreach { v =>
       future.thenAcceptAsync(
         { _ =>
           queue.offer(v)
@@ -127,14 +129,14 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
     val array = queue.toArray
     array.size shouldBe 100
-//    array shouldBe (0 until 100).toArray.reverse
+//    array shouldBe range.toArray.reverse
   }
 
   test("thenAccept") {
     val future = CompletableFuture.completedFuture("")
 
     val queue = new ConcurrentLinkedQueue[Int]()
-    (0 until 100).foreach { v =>
+    range.foreach { v =>
       future.thenAccept { _ =>
         queue.offer(v)
         println(Thread.currentThread())
@@ -144,14 +146,14 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
     val array = queue.toArray
     array.size shouldBe 100
-    array shouldBe (0 until 100).toArray
+    array shouldBe range.toArray
   }
 
-  test("thenAccept 2") {
+  test("thenAccept future completed later") {
     val future = new CompletableFuture[String]()
 
     val queue = new ConcurrentLinkedQueue[Int]()
-    (0 until 100).foreach { v =>
+    range.foreach { v =>
       future.thenAccept { _ =>
         queue.offer(v)
         println(Thread.currentThread())
@@ -163,6 +165,6 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
 
     val array = queue.toArray
     array.size shouldBe 100
-    array shouldBe (0 until 100).toArray
+    array shouldBe range.toArray.reverse
   }
 }
