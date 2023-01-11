@@ -38,6 +38,7 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
           val acceptThread = Thread.currentThread()
           println(acceptThread)
           acceptThread shouldNot equal(currentThread)
+          ()
         }
     }
   }
