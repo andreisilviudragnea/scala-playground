@@ -59,6 +59,27 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
     //      array shouldBe (0 until 100).toArray
   }
 
+  test("thenAcceptAsync 2") {
+    val future = new CompletableFuture[String]()
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    (0 until 100).foreach { v =>
+      future.thenAcceptAsync { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }
+    }
+
+    future.complete("")
+
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    //      array shouldBe (0 until 100).toArray
+  }
+
   test("thenAcceptAsync single-threaded executor") {
     val future = CompletableFuture.completedFuture("")
 
@@ -83,6 +104,32 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
     array shouldBe (0 until 100).toArray
   }
 
+  test("thenAcceptAsync single-threaded executor 2") {
+    val future = new CompletableFuture[String]()
+
+    val executor = Executors.newSingleThreadExecutor()
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    (0 until 100).foreach { v =>
+      future.thenAcceptAsync(
+        { _ =>
+          queue.offer(v)
+          println(Thread.currentThread())
+          ()
+        },
+        executor
+      )
+    }
+
+    future.complete("")
+
+    Thread.sleep(1_000)
+
+    val array = queue.toArray
+    array.size shouldBe 100
+//    array shouldBe (0 until 100).toArray.reverse
+  }
+
   test("thenAccept") {
     val future = CompletableFuture.completedFuture("")
 
@@ -94,6 +141,25 @@ class CompletableFutureSpec extends AnyFunSuite with should.Matchers {
         ()
       }
     }
+
+    val array = queue.toArray
+    array.size shouldBe 100
+    array shouldBe (0 until 100).toArray
+  }
+
+  test("thenAccept 2") {
+    val future = new CompletableFuture[String]()
+
+    val queue = new ConcurrentLinkedQueue[Int]()
+    (0 until 100).foreach { v =>
+      future.thenAccept { _ =>
+        queue.offer(v)
+        println(Thread.currentThread())
+        ()
+      }
+    }
+
+    future.complete("")
 
     val array = queue.toArray
     array.size shouldBe 100
