@@ -18,11 +18,21 @@ package org.example
 
 import cats.implicits.catsSyntaxEq
 import com.typesafe.scalalogging.Logger
-import org.apache.kafka.clients.producer.{KafkaProducer, Producer, ProducerRecord, RecordMetadata}
+import org.apache.kafka.clients.producer.{
+  KafkaProducer,
+  Producer,
+  ProducerRecord,
+  RecordMetadata
+}
 
 import java.util.Properties
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.{CompletableFuture, ExecutorService, Executors, ThreadFactory}
+import java.util.concurrent.{
+  CompletableFuture,
+  ExecutorService,
+  Executors,
+  ThreadFactory
+}
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{Future, Promise}
 import scala.jdk.DurationConverters.ScalaDurationOps
