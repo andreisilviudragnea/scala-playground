@@ -25,8 +25,9 @@ import cats.implicits._
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
-import java.util.concurrent.CompletableFuture
+import java.util.concurrent.{CompletableFuture, Executors}
 import java.util.concurrent.atomic.AtomicReference
+import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.DurationInt
 import scala.jdk.FutureConverters.FutureOps
 
@@ -108,6 +109,20 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
           .compile
           .drain
       }
+      .unsafeRunSync()
+  }
+
+  test("evalOn") {
+    IO(println("here"))
+      .map { _ =>
+        println("there")
+        ()
+      }
+      .evalOn(
+        ExecutionContext.fromExecutorService(
+          Executors.newSingleThreadExecutor()
+        )
+      )
       .unsafeRunSync()
   }
 }
