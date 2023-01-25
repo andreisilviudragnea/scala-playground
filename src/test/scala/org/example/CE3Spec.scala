@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.DurationInt
 import scala.jdk.FutureConverters.FutureOps
+import scala.util.Try
 
 class CE3Spec extends AnyFunSuite with should.Matchers {
   test("ce3") {
@@ -165,16 +166,64 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     Seq(
       IO.blocking {
         Thread.sleep(3_000)
-        println("0")
+        Console.println("0")
       },
       IO.blocking {
         Thread.sleep(3_000)
-        println("1")
+        Console.println("1")
       },
       IO.blocking {
         Thread.sleep(3_000)
-        println("2")
+        Console.println("2")
       }
     ).parSequence.unsafeRunSync()
+  }
+
+  test("parSequence cancellation blocking") {
+    Try(
+      Seq(
+        IO.blocking {
+          Thread.sleep(1_000)
+          Console.println("0")
+          throw new RuntimeException()
+        },
+        IO.blocking {
+          Thread.sleep(2_000)
+          Console.println("1")
+        }.onCancel(IO {
+          Console.println("Cancelled 1")
+        }),
+        IO.blocking {
+          Thread.sleep(3_000)
+          Console.println("2")
+        }.onCancel(IO {
+          Console.println("Cancelled 2")
+        })
+      ).parSequence.unsafeRunSync()
+    )
+  }
+
+  test("parSequence cancellation interruptibleMany") {
+    Try(
+      Seq(
+        IO.interruptibleMany {
+          Thread.sleep(1_000)
+          Console.println("0")
+          throw new RuntimeException()
+        },
+        IO.interruptibleMany {
+          Thread.sleep(2_000)
+          Console.println("1")
+        }.onCancel(IO {
+          Console.println("Cancelled 1")
+        }),
+        IO.interruptibleMany {
+          Thread.sleep(3_000)
+          Console.println("2")
+        }.onCancel(IO {
+          Console.println("Cancelled 2")
+        })
+      ).parSequence.unsafeRunSync()
+    )
   }
 }
