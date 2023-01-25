@@ -160,4 +160,21 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .timeout(1.second)
       .unsafeRunSync()
   }
+
+  test("parSequence") {
+    Seq(
+      IO.blocking {
+        Thread.sleep(3_000)
+        println("0")
+      },
+      IO.blocking {
+        Thread.sleep(3_000)
+        println("1")
+      },
+      IO.blocking {
+        Thread.sleep(3_000)
+        println("2")
+      }
+    ).parSequence.unsafeRunSync()
+  }
 }
