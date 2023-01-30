@@ -258,6 +258,9 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
   test("parSequence evalOn Caffeine cache") {
     val cache = Caffeine
       .newBuilder()
+      .initialCapacity(
+        100
+      ) // without reasonable initial capacity, the cache has very high contention on many concurrent writes
       .build[Int, String](new CacheLoader[Int, String] {
         override def load(key: Int): String = {
           Thread.sleep(5_000)
