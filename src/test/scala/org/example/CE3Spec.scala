@@ -128,38 +128,38 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
   }
 
   test("evalOn timeout not working") {
-    IO(Thread.sleep(10_000))
+    Try(IO(Thread.sleep(10_000))
       .evalOn(
         ExecutionContext.fromExecutorService(
           Executors.newSingleThreadExecutor()
         )
       )
       .timeout(1.second)
-      .unsafeRunSync()
+      .unsafeRunSync())
   }
 
   test("timeout not working") {
-    IO(Thread.sleep(10_000))
+    Try(IO(Thread.sleep(10_000))
       .timeout(1.second)
-      .unsafeRunSync()
+      .unsafeRunSync())
   }
 
   test("blocking timeout not working") {
-    IO.blocking(Thread.sleep(10_000))
+    Try(IO.blocking(Thread.sleep(10_000))
       .timeout(1.second)
-      .unsafeRunSync()
+      .unsafeRunSync())
   }
 
   test("interruptible timeout working") {
-    IO.interruptible(Thread.sleep(10_000))
+    Try(IO.interruptible(Thread.sleep(10_000))
       .timeout(1.second)
-      .unsafeRunSync()
+      .unsafeRunSync())
   }
 
   test("interruptibleMany timeout working") {
-    IO.interruptibleMany(Thread.sleep(10_000))
+    Try(IO.interruptibleMany(Thread.sleep(10_000))
       .timeout(1.second)
-      .unsafeRunSync()
+      .unsafeRunSync())
   }
 
   test("parSequence") {
