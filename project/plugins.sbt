@@ -1,2 +1,2 @@
-addSbtPlugin("org.typelevel" % "sbt-typelevel" % "0.5.0-M8")
+addSbtPlugin("org.typelevel" % "sbt-typelevel" % "0.5.0-M9")
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.9.0")
