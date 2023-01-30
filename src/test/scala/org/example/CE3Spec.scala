@@ -22,11 +22,12 @@ import cats.effect.kernel.Ref
 import cats.effect.std.Queue
 import cats.effect.unsafe.implicits.global
 import cats.implicits._
+import com.github.benmanes.caffeine.cache.{CacheLoader, Caffeine, LoadingCache}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
-import java.util.concurrent.{CompletableFuture, Executors}
 import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.{CompletableFuture, Executors}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.DurationInt
 import scala.jdk.FutureConverters.FutureOps
@@ -243,6 +244,31 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
         IO {
           Thread.sleep(5_000)
           Console.println(s"${Thread.currentThread().getName} $v")
+        }.evalOn(
+          ExecutionContext.fromExecutorService(
+            Executors.newSingleThreadExecutor()
+          )
+        )
+      }
+      .parSequence
+      .map { _ => Console.println("the end") }
+      .unsafeRunSync()
+  }
+
+  test("parSequence evalOn Caffeine cache") {
+    val cache = Caffeine
+      .newBuilder()
+      .build[Int, String](new CacheLoader[Int, String] {
+        override def load(key: Int): String = {
+          Thread.sleep(5_000)
+          key.toString
+        }
+      })
+    (0 to 100).toVector
+      .map { key =>
+        IO {
+          val value = cache.get(key)
+          Console.println(s"${Thread.currentThread().getName} $value")
         }.evalOn(
           ExecutionContext.fromExecutorService(
             Executors.newSingleThreadExecutor()
