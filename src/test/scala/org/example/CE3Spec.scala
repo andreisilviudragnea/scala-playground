@@ -128,38 +128,48 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
   }
 
   test("evalOn timeout not working") {
-    Try(IO(Thread.sleep(10_000))
-      .evalOn(
-        ExecutionContext.fromExecutorService(
-          Executors.newSingleThreadExecutor()
+    Try(
+      IO(Thread.sleep(10_000))
+        .evalOn(
+          ExecutionContext.fromExecutorService(
+            Executors.newSingleThreadExecutor()
+          )
         )
-      )
-      .timeout(1.second)
-      .unsafeRunSync())
+        .timeout(1.second)
+        .unsafeRunSync()
+    )
   }
 
   test("timeout not working") {
-    Try(IO(Thread.sleep(10_000))
-      .timeout(1.second)
-      .unsafeRunSync())
+    Try(
+      IO(Thread.sleep(10_000))
+        .timeout(1.second)
+        .unsafeRunSync()
+    )
   }
 
   test("blocking timeout not working") {
-    Try(IO.blocking(Thread.sleep(10_000))
-      .timeout(1.second)
-      .unsafeRunSync())
+    Try(
+      IO.blocking(Thread.sleep(10_000))
+        .timeout(1.second)
+        .unsafeRunSync()
+    )
   }
 
   test("interruptible timeout working") {
-    Try(IO.interruptible(Thread.sleep(10_000))
-      .timeout(1.second)
-      .unsafeRunSync())
+    Try(
+      IO.interruptible(Thread.sleep(10_000))
+        .timeout(1.second)
+        .unsafeRunSync()
+    )
   }
 
   test("interruptibleMany timeout working") {
-    Try(IO.interruptibleMany(Thread.sleep(10_000))
-      .timeout(1.second)
-      .unsafeRunSync())
+    Try(
+      IO.interruptibleMany(Thread.sleep(10_000))
+        .timeout(1.second)
+        .unsafeRunSync()
+    )
   }
 
   test("parSequence") {
@@ -225,5 +235,35 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
         })
       ).parSequence.unsafeRunSync()
     )
+  }
+
+  test("parSequence evalOn") {
+    (0 to 100).toVector
+      .map { v =>
+        IO {
+          Thread.sleep(5_000)
+          Console.println(s"${Thread.currentThread().getName} $v")
+        }.evalOn(
+          ExecutionContext.fromExecutorService(
+            Executors.newSingleThreadExecutor()
+          )
+        )
+      }
+      .parSequence
+      .map { _ => Console.println("the end") }
+      .unsafeRunSync()
+  }
+
+  test("parSequence blocking") {
+    (0 to 100).toVector
+      .map { v =>
+        IO.blocking {
+          Thread.sleep(5_000)
+          Console.println(s"${Thread.currentThread().getName} $v")
+        }
+      }
+      .parSequence
+      .map { _ => Console.println("the end") }
+      .unsafeRunSync()
   }
 }
