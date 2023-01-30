@@ -22,7 +22,7 @@ import cats.effect.kernel.Ref
 import cats.effect.std.Queue
 import cats.effect.unsafe.implicits.global
 import cats.implicits._
-import com.github.benmanes.caffeine.cache.{CacheLoader, Caffeine, LoadingCache}
+import com.github.benmanes.caffeine.cache.{CacheLoader, Caffeine}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
@@ -277,6 +277,36 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
             Executors.newSingleThreadExecutor()
           )
         )
+      }
+      .parSequence
+      .map { _ => Console.println("the end") }
+      .unsafeRunSync()
+  }
+
+  test("parSequence evalOn Caffeine async cache") {
+    val cache = Caffeine
+      .newBuilder()
+//      .initialCapacity(
+//        100
+//      ) // without reasonable initial capacity, the cache has very high contention on many concurrent writes
+      .buildAsync[Int, String](new CacheLoader[Int, String] {
+        override def load(key: Int): String = {
+          Console.println(s"Init ${Thread.currentThread().getName} $key")
+          Thread.sleep(5_000)
+          key.toString
+        }
+      })
+    (0 to 100).toVector
+      .map { key =>
+        IO.fromCompletableFuture(IO(cache.get(key)))
+          .map { value =>
+            Console.println(s"${Thread.currentThread().getName} $value")
+          }
+          .evalOn(
+            ExecutionContext.fromExecutorService(
+              Executors.newSingleThreadExecutor()
+            )
+          )
       }
       .parSequence
       .map { _ => Console.println("the end") }
