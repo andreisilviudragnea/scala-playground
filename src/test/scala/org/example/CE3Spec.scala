@@ -283,6 +283,42 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .unsafeRunSync()
   }
 
+  test("parSequence evalOn Caffeine two caches") {
+    val cache = Caffeine
+      .newBuilder()
+      .initialCapacity(
+        100
+      ) // without reasonable initial capacity, the cache has very high contention on many concurrent writes
+      .build[Int, String](new CacheLoader[Int, String] {
+        override def load(key: Int): String = {
+          Thread.sleep(5_000)
+          key.toString
+        }
+      })
+    val executorCache = Caffeine
+      .newBuilder()
+      .initialCapacity(
+        100
+      ) // without reasonable initial capacity, the cache has very high contention on many concurrent writes
+      .build[Int, ExecutionContext](new CacheLoader[Int, ExecutionContext] {
+        override def load(key: Int): ExecutionContext = {
+//          Thread.sleep(5_000)
+          ExecutionContext
+            .fromExecutorService(Executors.newSingleThreadExecutor())
+        }
+      })
+    (0 to 100).toVector
+      .map { key =>
+        IO {
+          val value = cache.get(key)
+          Console.println(s"${Thread.currentThread().getName} $value")
+        }.evalOn(executorCache.get(key))
+      }
+      .parSequence
+      .map { _ => Console.println("the end") }
+      .unsafeRunSync()
+  }
+
   test("parSequence evalOn Caffeine async cache") {
     val cache = Caffeine
       .newBuilder()
