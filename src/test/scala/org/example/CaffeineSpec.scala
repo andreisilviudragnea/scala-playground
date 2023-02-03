@@ -17,11 +17,13 @@
 package org.example
 
 import com.github.benmanes.caffeine.cache._
+import org.scalatest.TryValues.convertTryToSuccessOrFailure
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
 import scala.concurrent.duration.DurationInt
 import scala.jdk.DurationConverters.ScalaDurationOps
+import scala.util.Try
 
 class CaffeineSpec extends AnyFunSuite with should.Matchers {
 
@@ -128,5 +130,19 @@ class CaffeineSpec extends AnyFunSuite with should.Matchers {
     cache.get("b")
 
     cache.invalidateAll()
+  }
+
+  test("AsyncLoadingCache failing future") {
+    val cache: AsyncLoadingCache[String, String] = Caffeine
+      .newBuilder()
+      .expireAfterAccess(100.seconds.toJava)
+      .buildAsync { (_, _) =>
+        Thread.sleep(1_000)
+        throw new RuntimeException("failed here")
+      }
+
+    Try(cache.get("a").whenComplete((_, throwable) => {
+      println(s"here ${throwable.getMessage}")
+    })).failure.exception.getMessage shouldBe "failed here"
   }
 }
