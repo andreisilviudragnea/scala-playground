@@ -141,8 +141,38 @@ class CaffeineSpec extends AnyFunSuite with should.Matchers {
         throw new RuntimeException("failed here")
       }
 
-    Try(cache.get("a").whenComplete((_, throwable) => {
-      println(s"here ${throwable.getMessage}")
-    })).failure.exception.getMessage shouldBe "failed here"
+    Try(
+      cache
+        .get("a")
+        .whenComplete((_, throwable) => {
+          println(s"here ${throwable.getMessage}")
+        })
+    ).failure.exception.getMessage shouldBe "failed here"
+  }
+
+  test("AsyncLoadingCache failing future 2") {
+    val cache: AsyncLoadingCache[String, String] = Caffeine
+      .newBuilder()
+      .expireAfterAccess(100.seconds.toJava)
+      .buildAsync { _ =>
+        Thread.sleep(3_000)
+        throw new RuntimeException("failed here")
+      }
+
+    val future = cache.get("a")
+
+    (0 to 100).foreach { v =>
+      future
+        .thenAcceptAsync { value =>
+          println(s"won't happen $v $value")
+        }
+        .whenComplete((_, throwable) => {
+          println(
+            s"${Thread.currentThread().getName} $v ${throwable.getMessage}"
+          )
+        })
+    }
+
+    Thread.sleep(5_000)
   }
 }
