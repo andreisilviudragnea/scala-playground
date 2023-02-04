@@ -399,4 +399,16 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .map { _ => Console.println("the end") }
       .unsafeRunSync()
   }
+
+  test("unsafeRunAndForget") {
+    IO {
+      Thread.sleep(5_000)
+    }
+      .evalOn(
+        ExecutionContext.fromExecutorService(
+          Executors.newSingleThreadExecutor()
+        )
+      )
+      .unsafeRunAndForget()
+  }
 }
