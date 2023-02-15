@@ -16,10 +16,10 @@
 
 package org.example
 
-import io.circe.DecodingFailure
 import io.circe.generic.JsonCodec
 import io.circe.parser.decode
 import io.circe.syntax.EncoderOps
+import io.circe.{Codec, DecodingFailure}
 import org.example.CirceGenericAdtSpec.Base
 import org.example.CirceGenericAdtSpec.Base._
 import org.scalatest.funsuite.AnyFunSuite
@@ -55,5 +55,59 @@ class CirceGenericAdtSpec extends AnyFunSuite with should.Matchers {
     decode[Base](encodedB) shouldBe Left(
       DecodingFailure("JSON decoding to CNil should never happen", List.empty)
     )
+  }
+
+  test("null handling JsonCodec") {
+    @JsonCodec final case class Test(a: Option[String])
+    val a = Test(None)
+    val encoded = "{\"a\":null}"
+
+    a.asJson.noSpaces shouldBe encoded
+    decode[Test](encoded) shouldBe Right(a)
+
+    decode[Test](encoded) shouldBe Right(a)
+  }
+
+  test("missing field handling JsonCodec") {
+    @JsonCodec final case class Test(a: Option[String])
+    val a = Test(None)
+    val encoded = "{}"
+
+    a.asJson.noSpaces shouldBe "{\"a\":null}"
+    decode[Test](encoded) shouldBe Right(a)
+
+    decode[Test](encoded) shouldBe Right(a)
+  }
+
+  test("null handling Codec.forProduct") {
+    final case class Test(a: Option[String])
+
+    object Test {
+      implicit val testCodec = Codec.forProduct1("a")(Test.apply)(v => v.a)
+    }
+
+    val a = Test(None)
+    val encoded = "{\"a\":null}"
+
+    a.asJson.noSpaces shouldBe encoded
+    decode[Test](encoded) shouldBe Right(a)
+
+    decode[Test](encoded) shouldBe Right(a)
+  }
+
+  test("missing field handling Codec.forProduct") {
+    final case class Test(a: Option[String])
+
+    object Test {
+      implicit val testCodec = Codec.forProduct1("a")(Test.apply)(v => v.a)
+    }
+
+    val a = Test(None)
+    val encoded = "{}"
+
+    a.asJson.noSpaces shouldBe "{\"a\":null}"
+    decode[Test](encoded) shouldBe Right(a)
+
+    decode[Test](encoded) shouldBe Right(a)
   }
 }
