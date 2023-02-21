@@ -55,6 +55,16 @@ class CirceGenericAdtSpec extends AnyFunSuite with should.Matchers {
     decode[Base](encodedB) shouldBe Left(
       DecodingFailure("JSON decoding to CNil should never happen", List.empty)
     )
+
+    val baseA: Base = a
+    val encodedBaseA = "{\"A\":{\"a\":\"15\"}}"
+    baseA.asJson.noSpaces shouldBe encodedBaseA
+    decode[Base](encodedBaseA) shouldBe Right(baseA)
+
+    val baseB: Base = b
+    val encodedBaseB = "{\"B\":{\"b\":4}}"
+    baseB.asJson.noSpaces shouldBe encodedBaseB
+    decode[Base](encodedBaseB) shouldBe Right(baseB)
   }
 
   test("null handling JsonCodec") {
