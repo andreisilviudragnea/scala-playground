@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.example
+package org.example.kafkav1
 
 import cats.implicits.catsSyntaxEq
 import com.typesafe.scalalogging.Logger

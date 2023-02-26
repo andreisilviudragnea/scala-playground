@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-package org.example
+package org.example.kafkav1
 
 import org.apache.kafka.clients.producer.{ProducerRecord, RecordMetadata}
-import org.apache.kafka.common.TopicPartition
 
-import java.util.concurrent.ConcurrentLinkedQueue
 import scala.concurrent.Future
 
-class SafeKafkaProducerMock[K, V] extends SafeKafkaProducer[K, V] {
-  private val records = new ConcurrentLinkedQueue[ProducerRecord[K, V]]()
-
-  override def send(record: ProducerRecord[K, V]): Future[RecordMetadata] = {
-    records.offer(record)
-    Future.successful(
-      new RecordMetadata(new TopicPartition("", 0), 0, 0, 0, 0, 0)
-    )
-  }
-
-  override def close(): Unit = {
-    records.clear()
-  }
-
-  def getRecords: Array[ProducerRecord[K, V]] =
-    records.toArray(new Array[ProducerRecord[K, V]](0))
+trait SafeKafkaProducer[K, V] extends AutoCloseable {
+  def send(record: ProducerRecord[K, V]): Future[RecordMetadata]
 }
