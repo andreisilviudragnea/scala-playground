@@ -68,6 +68,7 @@ class ExecutorSpec extends AnyFunSuite with should.Matchers {
     range.foreach { v =>
       executor.execute { () =>
         queue.offer(v)
+        ()
       }
     }
 
