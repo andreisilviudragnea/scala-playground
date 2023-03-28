@@ -22,10 +22,10 @@ import org.scalatest.matchers.should
 import scala.util.Random
 
 /** @see
- *   https://en.wikipedia.org/wiki/Linear_congruential_generator
- * @see
- *   https://www.javamex.com/tutorials/random_numbers/lcg_bit_positions.shtml
- */
+  *   https://en.wikipedia.org/wiki/Linear_congruential_generator
+  * @see
+  *   https://www.javamex.com/tutorials/random_numbers/lcg_bit_positions.shtml
+  */
 class RandomPeriodicitySpec extends AnyFunSpec with should.Matchers {
   it(s"Random.nextInt().toByte periodicity (1L << 24) == 16_777_216") {
     val random = new Random
@@ -38,10 +38,10 @@ class RandomPeriodicitySpec extends AnyFunSpec with should.Matchers {
     val period = 1 << 24
 
     val r1 = new Random()
-    val a  = Array.fill(period)(r1.nextInt().toByte)
+    val a = Array.fill(period)(r1.nextInt().toByte)
 
     val r2 = new Random()
-    val b  = Array.fill(2 * period)(r2.nextInt().toByte)
+    val b = Array.fill(2 * period)(r2.nextInt().toByte)
 
     b.containsSlice(a) shouldBe true
   }
@@ -56,9 +56,11 @@ class RandomPeriodicitySpec extends AnyFunSpec with should.Matchers {
   //    periodicity(1L << 45, ApiSid.make(0)(random.nextBytes(_)))
   //  }
 
-  @SuppressWarnings(Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while"))
+  @SuppressWarnings(
+    Array("scalafix:DisableSyntax.var", "scalafix:DisableSyntax.while")
+  )
   private def periodicity[T](period: Long, block: => T): Unit = {
-    val v1    = block
+    val v1 = block
     var count = 0
     while (count < period - 1) {
       block
