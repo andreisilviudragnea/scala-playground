@@ -33,19 +33,23 @@ class ExecutorSpec extends AnyFunSuite with should.Matchers {
   }
 
   test("Fork-join pool single thread executor") {
-    testExecutorService(singleThreadForkJoinPool)
+    testExecutorService(singleThreadForkJoinPool())
   }
 
   test("Fork-join pool single thread executor order") {
-    testExecutorServiceOrder(singleThreadForkJoinPool)
+    testExecutorServiceOrder(singleThreadForkJoinPool())
   }
 
-  private def singleThreadForkJoinPool = {
+  test("Fork-join pool single thread executor order asyncMode == false") {
+    testExecutorServiceOrder(singleThreadForkJoinPool(asyncMode = false))
+  }
+
+  private def singleThreadForkJoinPool(asyncMode: Boolean = true) = {
     new ForkJoinPool(
       1,
       ForkJoinPool.defaultForkJoinWorkerThreadFactory,
       null,
-      true,
+      asyncMode,
       1,
       1,
       0,
