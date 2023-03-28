@@ -44,6 +44,21 @@ class ExecutorSpec extends AnyFunSuite with should.Matchers {
     testExecutorServiceOrder(singleThreadForkJoinPool(asyncMode = false))
   }
 
+  test("ForkJoinPool bug") {
+    val executor = new ForkJoinPool(Runtime.getRuntime.availableProcessors())
+
+    val queue = new ArrayBlockingQueue[String](1024)
+
+    (0 until 10_000_000).foreach { i =>
+      executor.execute { () =>
+        println(s"${Thread.currentThread().getName} Putting $i...")
+        queue.put("i")
+      }
+    }
+
+    Thread.sleep(100_000)
+  }
+
   private def singleThreadForkJoinPool(asyncMode: Boolean = true) = {
     new ForkJoinPool(
       1,
@@ -72,7 +87,7 @@ class ExecutorSpec extends AnyFunSuite with should.Matchers {
       }
     }
 
-    executor.close()
+//    executor.close()
 
     val array = queue.toArray
     array.size shouldBe n
