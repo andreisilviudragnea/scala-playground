@@ -19,8 +19,8 @@ package org.example
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should
 
+import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicLong
-import java.util.concurrent.{ExecutorService, Executors, ForkJoinPool, TimeUnit}
 import scala.util.control.Breaks.{break, breakable}
 
 class ExecutorSpec extends AnyFunSuite with should.Matchers {
@@ -28,21 +28,50 @@ class ExecutorSpec extends AnyFunSuite with should.Matchers {
     testExecutorService(Executors.newSingleThreadExecutor())
   }
 
+  test("Single thread executor order") {
+    testExecutorServiceOrder(Executors.newSingleThreadExecutor())
+  }
+
   test("Fork-join pool single thread executor") {
-    testExecutorService(
-      new ForkJoinPool(
-        1,
-        ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-        null,
-        true,
-        1,
-        1,
-        0,
-        null,
-        60_000,
-        TimeUnit.MILLISECONDS
-      )
+    testExecutorService(singleThreadForkJoinPool)
+  }
+
+  test("Fork-join pool single thread executor order") {
+    testExecutorServiceOrder(singleThreadForkJoinPool)
+  }
+
+  private def singleThreadForkJoinPool = {
+    new ForkJoinPool(
+      1,
+      ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+      null,
+      true,
+      1,
+      1,
+      0,
+      null,
+      60_000,
+      TimeUnit.MILLISECONDS
     )
+  }
+
+  private def testExecutorServiceOrder(executor: ExecutorService) = {
+    val queue = new ConcurrentLinkedQueue[Int]()
+
+    val n = 10_000
+    val range = 0 until n
+
+    range.foreach { v =>
+      executor.execute { () =>
+        queue.offer(v)
+      }
+    }
+
+    executor.close()
+
+    val array = queue.toArray
+    array.size shouldBe n
+    array shouldBe range.toArray
   }
 
   private def testExecutorService(executor: ExecutorService) = {
@@ -64,7 +93,7 @@ class ExecutorSpec extends AnyFunSuite with should.Matchers {
             } else {
               executor.execute { () =>
                 work.getAndIncrement()
-                println(s"Work ${work.get()}")
+                println(s"${Thread.currentThread().getName} Work ${work.get()}")
               }
             }
           }
