@@ -98,7 +98,8 @@ class ExecutorSpec extends AnyFunSuite with should.Matchers {
             } else {
               executor.execute { () =>
                 work.getAndIncrement()
-                println(s"${Thread.currentThread().getName} Work ${work.get()}")
+//                println(s"${Thread.currentThread().getName} Work ${work.get()}")
+                ()
               }
             }
           }
