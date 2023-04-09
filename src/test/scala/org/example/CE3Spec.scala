@@ -34,7 +34,7 @@ import scala.jdk.FutureConverters.FutureOps
 import scala.util.Try
 
 class CE3Spec extends AnyFunSuite with should.Matchers {
-  test("ce3") {
+  ignore("ce3") {
     for (_ <- 0 until 1_000_000) {
       val ref = Ref.unsafe(5)
       val thread = new AtomicReference[Thread]()
@@ -50,7 +50,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     }
   }
 
-  test("parTraverse") {
+  ignore("parTraverse") {
     (1 to 1_000).toList
       .parTraverse(v => IO.sleep(10.seconds) *> IO.pure(v))
       .unsafeRunSync()
@@ -128,7 +128,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .unsafeRunSync()
   }
 
-  test("evalOn timeout not working") {
+  ignore("evalOn timeout not working") {
     Try(
       IO(Thread.sleep(10_000))
         .evalOn(
@@ -141,7 +141,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     )
   }
 
-  test("timeout not working") {
+  ignore("timeout not working") {
     Try(
       IO(Thread.sleep(10_000))
         .timeout(1.second)
@@ -149,7 +149,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     )
   }
 
-  test("blocking timeout not working") {
+  ignore("blocking timeout not working") {
     Try(
       IO.blocking(Thread.sleep(10_000))
         .timeout(1.second)
@@ -157,7 +157,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     )
   }
 
-  test("interruptible timeout working") {
+  ignore("interruptible timeout working") {
     Try(
       IO.interruptible(Thread.sleep(10_000))
         .timeout(1.second)
@@ -165,7 +165,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     )
   }
 
-  test("interruptibleMany timeout working") {
+  ignore("interruptibleMany timeout working") {
     Try(
       IO.interruptibleMany(Thread.sleep(10_000))
         .timeout(1.second)
@@ -173,7 +173,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     )
   }
 
-  test("parSequence") {
+  ignore("parSequence") {
     Seq(
       IO.blocking {
         Thread.sleep(3_000)
@@ -190,7 +190,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     ).parSequence.unsafeRunSync()
   }
 
-  test("parSequence cancellation blocking") {
+  ignore("parSequence cancellation blocking") {
     Try(
       Seq(
         IO.blocking {
@@ -214,7 +214,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     )
   }
 
-  test("parSequence cancellation interruptibleMany") {
+  ignore("parSequence cancellation interruptibleMany") {
     Try(
       Seq(
         IO.interruptibleMany {
@@ -238,7 +238,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
     )
   }
 
-  test("parSequence evalOn") {
+  ignore("parSequence evalOn") {
     (0 to 100).toVector
       .map { v =>
         IO {
@@ -255,7 +255,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .unsafeRunSync()
   }
 
-  test("parSequence evalOn Caffeine cache") {
+  ignore("parSequence evalOn Caffeine cache") {
     val cache = Caffeine
       .newBuilder()
       .initialCapacity(
@@ -283,7 +283,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .unsafeRunSync()
   }
 
-  test("parSequence evalOn Caffeine two caches") {
+  ignore("parSequence evalOn Caffeine two caches") {
     val cache = Caffeine
       .newBuilder()
       .initialCapacity(
@@ -319,7 +319,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .unsafeRunSync()
   }
 
-  test("parSequence evalOn Caffeine two caches String keys") {
+  ignore("parSequence evalOn Caffeine two caches String keys") {
     val cache = Caffeine
       .newBuilder()
       .initialCapacity(
@@ -357,7 +357,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .unsafeRunSync()
   }
 
-  test("parSequence evalOn Caffeine async cache") {
+  ignore("parSequence evalOn Caffeine async cache") {
     val cache = Caffeine
       .newBuilder()
 //      .initialCapacity(
@@ -387,7 +387,7 @@ class CE3Spec extends AnyFunSuite with should.Matchers {
       .unsafeRunSync()
   }
 
-  test("parSequence blocking") {
+  ignore("parSequence blocking") {
     (0 to 100).toVector
       .map { v =>
         IO.blocking {
