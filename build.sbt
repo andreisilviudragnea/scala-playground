@@ -25,7 +25,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
   "com.github.ben-manes.caffeine" % "caffeine" % "3.1.6",
-  "co.fs2" %% "fs2-core" % "3.6.1",
+  "co.fs2" %% "fs2-core" % "3.7.0",
   "io.circe" %% "circe-generic" % "0.14.5",
   "io.circe" %% "circe-parser" % "0.14.5",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
