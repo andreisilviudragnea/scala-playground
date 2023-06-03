@@ -93,7 +93,8 @@ class CirceGenericAdtSpec extends AnyFunSuite with should.Matchers {
     final case class Test(a: Option[String])
 
     object Test {
-      implicit val testCodec = Codec.forProduct1("a")(Test.apply)(v => v.a)
+      implicit val testCodec: Codec.AsObject[Test] =
+        Codec.forProduct1("a")(Test.apply)(v => v.a)
     }
 
     val a = Test(None)
@@ -109,7 +110,8 @@ class CirceGenericAdtSpec extends AnyFunSuite with should.Matchers {
     final case class Test(a: Option[String])
 
     object Test {
-      implicit val testCodec = Codec.forProduct1("a")(Test.apply)(v => v.a)
+      implicit val testCodec: Codec.AsObject[Test] =
+        Codec.forProduct1("a")(Test.apply)(v => v.a)
     }
 
     val a = Test(None)
