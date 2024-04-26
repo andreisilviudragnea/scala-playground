@@ -27,6 +27,6 @@ libraryDependencies ++= Seq(
   "com.github.ben-manes.caffeine" % "caffeine" % "3.1.8",
   "co.fs2" %% "fs2-core" % "3.10.2",
   "io.circe" %% "circe-generic" % "0.14.7",
-  "io.circe" %% "circe-parser" % "0.14.6",
+  "io.circe" %% "circe-parser" % "0.14.7",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5"
 )
