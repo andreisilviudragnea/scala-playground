@@ -4,7 +4,7 @@ name := "scala-playground"
 
 version := "0.1"
 
-scalaVersion := "2.13.12"
+scalaVersion := "2.13.15"
 
 inThisBuild(
   Seq(
