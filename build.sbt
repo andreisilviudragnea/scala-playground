@@ -24,7 +24,7 @@ libraryDependencies ++= Seq(
   "org.apache.kafka" % "kafka-clients" % "3.9.0",
   "org.scalatest" %% "scalatest" % "3.2.19" % Test,
   "org.scalamock" %% "scalamock" % "6.1.1" % Test,
-  "com.github.ben-manes.caffeine" % "caffeine" % "3.1.8",
+  "com.github.ben-manes.caffeine" % "caffeine" % "3.2.4",
   "co.fs2" %% "fs2-core" % "3.11.0",
   "io.circe" %% "circe-generic" % "0.14.10",
   "io.circe" %% "circe-parser" % "0.14.10",
